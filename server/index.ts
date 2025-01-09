@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
 const app = express();
-const cors = require('cors');
-const mysql = require('mysql');
-const bodyParser = require('body-parser');
+import cors from 'cors';
+import mysql from 'mysql';
+import bodyParser from 'body-parser';
 
 // Create a connection pool to the database
 const db = mysql.createPool({
@@ -28,7 +28,7 @@ app.post('/signup', (req, res) => {
 
   // SQL query to insert data into the database
   const sqlInsert = "INSERT INTO users (email, password, firstName, lastName, role) VALUES (?, ?, ?, ?, ?)";
-  
+
   db.query(sqlInsert, [email, password, firstname, lastname, role], (err, result) => {
     if (err) {
       console.error('Error inserting user:', err);
@@ -41,7 +41,7 @@ app.post('/signup', (req, res) => {
   });
 });
 app.post('/signin', (req, res) => {
-    
+
 });
 // Test route
 app.get('/', (req, res) => {
