@@ -12,7 +12,7 @@ const db = mysql.createPool({
   database: 'event_reservation',
 });
 
-// Middleware
+// Middlewarehttp://localhost:5173/signup
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
@@ -41,7 +41,40 @@ app.post('/signup', (req, res) => {
   });
 });
 app.post('/signin', (req, res) => {
+  const { email, password } = req.body;
 
+  // Check if email and password are provided
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required' });
+  }
+
+  // SQL query to check if the user exists with the provided credentials
+  const sqlSelect = "SELECT * FROM users WHERE email = ? AND password = ?";
+
+  db.query(sqlSelect, [email, password], (err, result) => {
+    if (err) {
+      console.error('Error fetching user:', err);
+      return res.status(500).json({ message: 'Error fetching user', error: err });
+    }
+
+    if (result.length > 0) {
+      // User found
+      const user = result[0];
+      res.status(200).json({
+        message: 'Sign in successful',
+        user: {
+          id: user.id,
+          email: user.email,
+          firstname: user.firstName,
+          lastname: user.lastName,
+          role: user.role,
+        }
+      });
+    } else {
+      // User not found
+      res.status(401).json({ message: 'Invalid email or password' });
+    }
+  });
 });
 // Test route
 app.get('/', (req, res) => {
