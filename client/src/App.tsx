@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Im
 import './App.css';
 import SignUp from './pages/SignUp/signup'; // Import SignUp page
 import SignIn from './pages/SignIn/signin'; // Import SignIn page
-
+import Dashboard from './pages/dashboard/dashboard'; // Import Dashboard page
 function App() {
   const apiCall = () => {
     axios.get('http://localhost:3000').then(() => {
@@ -21,6 +21,7 @@ function App() {
           API Call
         </button>} />
           <Route path="/signin" element={<SignIn />}/>
+          
         </Routes>
         
       </Router>
