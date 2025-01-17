@@ -1,50 +1,44 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // If you're using React Router
-import { Button } from 'antd';
+import axios from 'axios';
 
 const Dashboard: React.FC = () => {
-  const [user, setUser] = useState<{ name: string; email: string } | null>(null);
-  const navigate = useNavigate();
+  const [userData, setUserData] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  // Simulate fetching user data
   useEffect(() => {
-    // Fetch user data from localStorage or an API
-    const loggedInUser = JSON.parse(localStorage.getItem('user') || 'null');
-    if (loggedInUser) {
-      setUser(loggedInUser);
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      axios
+        .get('http://localhost:3000/user', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          setUserData(response.data);  // Set user data for display
+          setLoading(false);  // Stop loading
+        })
+        .catch((error) => {
+          console.error(error);
+          setLoading(false);  // Stop loading in case of error
+        });
     } else {
-      // Redirect to sign-in if no user is found
-      navigate('/signin');
+      setLoading(false);  // Stop loading if no token is found
     }
-  }, [navigate]);
+  }, []);
 
-  // Handle sign-out
-  const handleSignOut = () => {
-    // Clear user data from localStorage and redirect to sign-in
-    localStorage.removeItem('user');
-    navigate('/signin');
-  };
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-  if (!user) {
-    return <p>Loading...</p>; // Show a loading message while fetching user data
+  if (!userData) {
+    return <div>Please sign in</div>;  // Display message if no user data found
   }
 
   return (
-    <div className="dashboard-container p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-4">Welcome, {user.name}!</h1>
-      <p className="text-lg mb-6">Email: {user.email}</p>
-      
-      <div className="actions flex flex-col md:flex-row gap-4">
-        <Button type="primary" className="w-full md:w-auto" onClick={() => navigate('/profile')}>
-          View Profile
-        </Button>
-        <Button type="default" className="w-full md:w-auto" onClick={() => navigate('/settings')}>
-          Account Settings
-        </Button>
-        <Button type="danger" className="w-full md:w-auto" onClick={handleSignOut}>
-          Sign Out
-        </Button>
-      </div>
+    <div>
+      <h1>Hello, {userData.firstName} {userData.lastName}!</h1>
     </div>
   );
 };
