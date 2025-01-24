@@ -58,12 +58,12 @@ app.post('/signin', (req, res) => {
       const token = jwt.sign(
         { id: user.id, firstName: user.firstName, lastName: user.lastName, role: user.role },
         SECRET_KEY,
-        { expiresIn: '1h' }  // Token will expire in 1 hour
+        { expiresIn: '1h' } // Token will expire in 1 hour
       );
 
       return res.status(200).json({
         message: 'Sign in successful',
-        token,  // Send the token back to the frontend
+        token, // Send the token back to the frontend
       });
     } else {
       return res.status(401).json({ message: 'Invalid email or password' });

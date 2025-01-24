@@ -2,6 +2,7 @@ import React, { useState, FormEvent } from 'react';
 import axios from 'axios';
 import { Input, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode'; // Import the jwt-decode library
 
 const SignIn: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -14,9 +15,21 @@ const SignIn: React.FC = () => {
     axios
       .post('http://localhost:3000/signin', { email, password })
       .then((response) => {
-        const token = response.data.token;
-        localStorage.setItem('token', token);  // Save token in localStorage
-        navigate('/dashboard/UserDashboard');  // Redirect to the dashboard
+        const token = response.data.token; // Get the raw JWT
+        localStorage.setItem('token', token); // Save the token in localStorage
+
+        // Decode the JWT to access the role
+        const decodedToken: any = jwtDecode(token); // Use jwt-decode to parse the token
+        const role = decodedToken.role; // Extract the role field
+
+        // Redirect based on the role
+        if (role === 'USER') {
+          navigate('/dashboard/UserDashboard');
+        } else if (role === 'ADMIN') {
+          navigate('/dashboard/AdminDashboard');
+        } else if (role === 'HOST') {
+          navigate('/dashboard/HostDashboard');
+        }
       })
       .catch((error) => {
         setErrorMessage(error.response.data.message);
