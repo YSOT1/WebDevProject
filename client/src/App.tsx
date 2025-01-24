@@ -5,6 +5,9 @@ import './App.css';
 import SignUp from './pages/SignUp/signup'; // Import SignUp page
 import SignIn from './pages/SignIn/signin'; // Import SignIn page
 import UserDashboard from './pages/dashboard/UserDashboard';
+import AdminDashboard from './pages/dashboard/AdminDashboard';
+import HostDashboard from './pages/dashboard/HostDashboard';
+import EventPage from './pages/EventPagecrud/eventpage';
 
 function App() {
   const apiCall = () => {
@@ -22,7 +25,11 @@ function App() {
           </button>} />
           <Route path="/signup" element={<SignUp />} /> {/* Add route for SignUp page */}
           <Route path="/signin" element={<SignIn />} /> {/* Add route for SignIn page */}
-          <Route path="/dashboard/UserDashboard" element={<UserDashboard />} /> {/* Add route for Dashboard */}
+          <Route path="/dashboard/UserDashboard" element={<UserDashboard />} /> {/* Add route for User Dashboard */}
+          <Route path="/dashboard/HostDashboard" element={<HostDashboard />} /> {/* Add route for Host Dashboard */}
+          <Route path="/dashboard/AdminDashboard" element={<AdminDashboard />} /> {/* Add route for Admin Dashboard */}
+          <Route path="/EventPagecrud/eventpage" element={<EventPage />} /> {/* Add route for event page */}
+
         </Routes>
       </Router>
     </div>
