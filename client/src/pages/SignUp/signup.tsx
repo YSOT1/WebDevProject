@@ -141,7 +141,6 @@ const SignUp: React.FC = () => {
       >
         <Option value="HOST">Host</Option>
         <Option value="USER">User</Option>
-        <Option value="ADMIN">Admin</Option>
       </Select>
 
       <Button type="primary" htmlType="submit" className="w-full mt-4">
