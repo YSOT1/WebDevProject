@@ -97,6 +97,68 @@ app.get('/user', verifyToken, (req, res) => {
     role: req.user.role,
   });
 });
+app.get('/events', verifyToken, (req, res) => {
+  const hostId = req.user.id;
+
+  const sqlSelect = `SELECT * FROM events WHERE createdBy = ?`;
+
+  db.query(sqlSelect, [hostId], (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error fetching events', error: err });
+    }
+    res.status(200).json(results);
+  });
+});
+app.post('/events', verifyToken, (req, res) => {
+  const { title, description, date, location, maxParticipants } = req.body;
+  const createdBy = req.user.id;
+
+  if (!title || !description || !date || !maxParticipants) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  const sqlInsert = `
+    INSERT INTO events (title, description, date, location, maxParticipants, createdBy)
+    VALUES (?, ?, ?, ?, ?, ?)`;
+
+  db.query(sqlInsert, [title, description, date, location, maxParticipants, createdBy], (err, result) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error creating event', error: err });
+    }
+    res.status(201).json({ message: 'Event created successfully', eventId: result.insertId });
+  });
+});
+app.get('/events/:id', verifyToken, (req, res) => {
+  const eventId = req.params.id;
+
+  const sqlEvent = `SELECT * FROM events WHERE id = ?`;
+  const sqlReservations = `
+    SELECT r.id, r.status, u.firstName, u.lastName
+    FROM reservations r
+    JOIN users u ON r.userId = u.id
+    WHERE r.eventId = ?`;
+
+  db.query(sqlEvent, [eventId], (err, eventResult) => {
+    if (err) return res.status(500).json({ message: 'Error fetching event', error: err });
+
+    if (eventResult.length === 0) return res.status(404).json({ message: 'Event not found' });
+
+    db.query(sqlReservations, [eventId], (err, reservationsResult) => {
+      if (err) return res.status(500).json({ message: 'Error fetching reservations', error: err });
+
+      res.status(200).json({ event: eventResult[0], reservations: reservationsResult });
+    });
+  });
+});
+
+app.delete('/events/:id', verifyToken, (req, res) => {
+  const eventId = req.params.id;
+  const sql = "DELETE FROM events WHERE id = ?";
+  db.query(sql, [eventId], (err) => {
+      if (err) return res.status(500).json({ message: 'Error deleting event', error: err });
+      res.status(200).json({ message: 'Event deleted successfully' });
+  });
+});
 
 app.listen(3000, () => {
   console.log('Server is running on http://localhost:3000');
