@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Im
 import './App.css';
 import SignUp from './pages/SignUp/signup'; // Import SignUp page
 import SignIn from './pages/SignIn/signin'; // Import SignIn page
-import Dashboard from './pages/dashboard/dashboard'; // Import Dashboard page
+import UserDashboard from './pages/dashboard/UserDashboard';
 
 function App() {
   const apiCall = () => {
@@ -22,7 +22,7 @@ function App() {
           </button>} />
           <Route path="/signup" element={<SignUp />} /> {/* Add route for SignUp page */}
           <Route path="/signin" element={<SignIn />} /> {/* Add route for SignIn page */}
-          <Route path="/dashboard" element={<Dashboard />} /> {/* Add route for Dashboard */}
+          <Route path="/dashboard" element={<UserDashboard />} /> {/* Add route for Dashboard */}
         </Routes>
       </Router>
     </div>

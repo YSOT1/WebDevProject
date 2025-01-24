@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const Dashboard: React.FC = () => {
+const UserDashboard: React.FC = () => {
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -43,4 +43,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export default UserDashboard;

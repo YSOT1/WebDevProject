@@ -16,7 +16,7 @@ const SignIn: React.FC = () => {
       .then((response) => {
         const token = response.data.token;
         localStorage.setItem('token', token);  // Save token in localStorage
-        navigate('/dashboard');  // Redirect to the dashboard
+        navigate('/dashboard/UserDashboard');  // Redirect to the dashboard
       })
       .catch((error) => {
         setErrorMessage(error.response.data.message);
