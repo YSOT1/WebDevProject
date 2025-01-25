@@ -1,24 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-
+import { useNavigate } from "react-router-dom";
 const EventPage: React.FC = () => {
     const { eventId } = useParams<{ eventId: string }>();
     const [event, setEvent] = useState<any>(null);
     const [reservations, setReservations] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-
+    const navigate = useNavigate();
     useEffect(() => {
         const token = localStorage.getItem('token');
+        
+        console.log("Fetching event details for ID:", eventId);
+    
         axios
             .get(`http://localhost:3000/events/${eventId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             })
             .then((response) => {
+                console.log("Fetched event data:", response.data);
                 setEvent(response.data.event);
                 setReservations(response.data.reservations);
             })
-            .catch((error) => console.error('Error fetching event details:', error))
+            .catch((error) => {
+                console.error("Error fetching event details:", error);
+            })
             .finally(() => setLoading(false));
     }, [eventId]);
 
@@ -39,13 +45,17 @@ const EventPage: React.FC = () => {
             <p>Seats Left: {event.maxParticipants - reservations.length}</p>
 
             <h2>Reservations</h2>
-            <ul>
-                {reservations.map((reservation) => (
-                    <li key={reservation.id}>
-                        {reservation.userName} - {reservation.status}
-                    </li>
-                ))}
-            </ul>
+            {reservations.length > 0 ? (
+                <ul>
+                    {reservations.map((reservation) => (
+                        <li key={reservation.id}>
+                            {reservation.firstName || 'Anonymous'} {reservation.lastName || ''} - {reservation.status}
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p>No reservations yet.</p>
+            )}
         </div>
     );
 };

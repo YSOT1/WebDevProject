@@ -109,6 +109,7 @@ app.get('/events', verifyToken, (req, res) => {
     res.status(200).json(results);
   });
 });
+
 app.post('/events', verifyToken, (req, res) => {
   const { title, description, date, location, maxParticipants } = req.body;
   const createdBy = req.user.id;
@@ -128,6 +129,7 @@ app.post('/events', verifyToken, (req, res) => {
     res.status(201).json({ message: 'Event created successfully', eventId: result.insertId });
   });
 });
+
 app.get('/events/:id', verifyToken, (req, res) => {
   const eventId = req.params.id;
 
@@ -135,20 +137,68 @@ app.get('/events/:id', verifyToken, (req, res) => {
   const sqlReservations = `
     SELECT r.id, r.status, u.firstName, u.lastName
     FROM reservations r
-    JOIN users u ON r.userId = u.id
+    LEFT JOIN users u ON r.userId = u.id
     WHERE r.eventId = ?`;
 
-  db.query(sqlEvent, [eventId], (err, eventResult) => {
-    if (err) return res.status(500).json({ message: 'Error fetching event', error: err });
+  console.log("Fetching event with ID:", eventId);
 
-    if (eventResult.length === 0) return res.status(404).json({ message: 'Event not found' });
+  db.query(sqlEvent, [eventId], (err, eventResult) => {
+    if (err) {
+      console.error("Error fetching event:", err);
+      return res.status(500).json({ message: 'Error fetching event', error: err });
+    }
+
+    if (eventResult.length === 0) {
+      console.log("No event found for ID:", eventId);
+      return res.status(404).json({ message: 'Event not found' });
+    }
 
     db.query(sqlReservations, [eventId], (err, reservationsResult) => {
-      if (err) return res.status(500).json({ message: 'Error fetching reservations', error: err });
+      if (err) {
+        console.error("Error fetching reservations:", err);
+        return res.status(500).json({ message: 'Error fetching reservations', error: err });
+      }
 
-      res.status(200).json({ event: eventResult[0], reservations: reservationsResult });
+      console.log("Event details:", eventResult[0]);
+      console.log("Reservations:", reservationsResult);
+
+      res.status(200).json({
+        event: eventResult[0],
+        reservations: reservationsResult || [],
+      });
     });
   });
+});
+
+app.put('/events/:id', verifyToken, (req, res) => {
+  const { id } = req.params;
+  const { title, description, date, location, maxParticipants } = req.body;
+
+  if (!title || !description || !date || !location || !maxParticipants) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  const sqlUpdate = `
+    UPDATE events 
+    SET title = ?, description = ?, date = ?, location = ?, maxParticipants = ? 
+    WHERE id = ? AND createdBy = ?
+  `;
+
+  db.query(
+    sqlUpdate,
+    [title, description, date, location, maxParticipants, id, req.user.id],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ message: 'Error updating event', error: err });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: 'Event not found or unauthorized' });
+      }
+
+      res.status(200).json({ message: 'Event updated successfully' });
+    }
+  );
 });
 
 app.delete('/events/:id', verifyToken, (req, res) => {

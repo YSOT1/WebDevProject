@@ -28,8 +28,8 @@ function App() {
           <Route path="/dashboard/UserDashboard" element={<UserDashboard />} /> {/* Add route for User Dashboard */}
           <Route path="/dashboard/HostDashboard" element={<HostDashboard />} /> {/* Add route for Host Dashboard */}
           <Route path="/dashboard/AdminDashboard" element={<AdminDashboard />} /> {/* Add route for Admin Dashboard */}
-          <Route path="/EventPagecrud/eventpage" element={<EventPage />} /> {/* Add route for event page */}
-
+          <Route path="/events/:eventId" element={<EventPage />} /> {/* Add route for event page */}
+          
         </Routes>
       </Router>
     </div>

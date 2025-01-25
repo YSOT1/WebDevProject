@@ -11,6 +11,8 @@ const HostDashboard: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [events, setEvents] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<any>(null); // Store the event being edited
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,13 +40,21 @@ const HostDashboard: React.FC = () => {
   }, []);
 
   const fetchEvents = (hostId: number) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      message.error("Unauthorized: Token not found.");
+      return;
+    }
+
     axios
-      .get(`http://localhost:3000/events?hostId=${hostId}`)
+      .get(`http://localhost:3000/events?hostId=${hostId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((response) => {
         setEvents(response.data);
       })
       .catch((error) => {
-        console.error(error);
+        console.error("Error fetching events:", error);
         message.error("Failed to fetch events.");
       });
   };
@@ -77,6 +87,43 @@ const HostDashboard: React.FC = () => {
         console.error(error);
         message.error("Failed to create event.");
       });
+  };
+
+  const handleEditEvent = (event: any) => {
+    setEditingEvent(event); // Set the event to be edited
+    setIsModalOpen(true); // Open the modal for editing
+  };
+
+  const handleSaveEvent = (values: any) => {
+    const token = localStorage.getItem("token");
+  
+    if (editingEvent) {
+      // Update existing event
+      axios
+        .put(
+          `http://localhost:3000/events/${editingEvent.id}`,
+          {
+            ...values,
+            date: values.date.format("YYYY-MM-DD"),
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        )
+        .then(() => {
+          message.success("Event updated successfully!");
+          fetchEvents(userData.id);
+          setIsModalOpen(false);
+          setEditingEvent(null); // Clear the editing event
+        })
+        .catch((error) => {
+          console.error(error);
+          message.error("Failed to update event.");
+        });
+    } else {
+      // Create new event
+      handleCreateEvent(values);
+    }
   };
 
   const handleDeleteEvent = (eventId: number) => {
@@ -112,10 +159,16 @@ const HostDashboard: React.FC = () => {
       </div>
 
       {/* Section 2: Create event and event list */}
+      <h1>
+          List of Events
+        </h1>
       <div style={{ marginTop: "20px" }}>
         <Button
           type="primary"
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            setEditingEvent(null); // Reset editing state for new event
+            setIsModalOpen(true);
+          }}
           style={{ marginBottom: "20px" }}
         >
           Create Event
@@ -129,15 +182,13 @@ const HostDashboard: React.FC = () => {
               actions={[
                 <Button
                   type="link"
-                  onClick={() => navigate(`/event/${event.id}`)}
+                  onClick={() => navigate(`/events/${event.id}`)}
                 >
                   View
                 </Button>,
                 <Button
                   type="link"
-                  onClick={() =>
-                    message.info("Edit functionality coming soon!")
-                  }
+                  onClick={() => handleEditEvent(event)} // Open modal for editing
                 >
                   Edit
                 </Button>,
@@ -163,14 +214,18 @@ const HostDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal for creating events */}
+      {/* Modal for creating/editing events */}
       <Modal
-        title="Create Event"
+        title={editingEvent ? "Edit Event" : "Create Event"}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={null}
       >
-        <Form layout="vertical" onFinish={handleCreateEvent}>
+        <Form
+          layout="vertical"
+          onFinish={handleSaveEvent}
+          initialValues={editingEvent ? { ...editingEvent, date: dayjs(editingEvent.date) } : {}}
+        >
           <Form.Item
             label="Title"
             name="title"
@@ -209,7 +264,7 @@ const HostDashboard: React.FC = () => {
             <Input type="number" />
           </Form.Item>
           <Button type="primary" htmlType="submit">
-            Create Event
+            {editingEvent ? "Save Changes" : "Create Event"}
           </Button>
         </Form>
       </Modal>
