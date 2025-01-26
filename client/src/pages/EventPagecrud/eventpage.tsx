@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Button, Card, Spin, Typography, message } from "antd";
+
+const { Title, Paragraph, Text } = Typography;
 
 const EventPage: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
@@ -67,19 +70,22 @@ const EventPage: React.FC = () => {
         }
       )
       .then(() => {
-        alert("Reservation successful!");
+        message.success("Reservation successful!");
         setUserHasReservation(true);
         navigate("/dashboard/UserDashboard");
       })
       .catch((error) => {
         const errorMessage = error.response?.data?.message || "Failed to make a reservation.";
-        alert(errorMessage); // Show a specific error message if provided by the backend
+        message.error(errorMessage); // Show a specific error message if provided by the backend
       });
   };
 
-
   if (loadingEvent || loadingRole) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Spin size="large" />
+      </div>
+    );
   }
 
   if (!event) {
@@ -87,51 +93,61 @@ const EventPage: React.FC = () => {
   }
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>{event.title}</h1>
-      <p>{event.description}</p>
-      <p>Date: {new Date(event.date).toLocaleString()}</p>
-      <p>Location: {event.location}</p>
-      <p>Seats Left: {event.maxParticipants}</p>
+    <div className="container mx-auto p-6">
+      <Card className="shadow-lg">
+        <Title level={1} className="text-center text-3xl">{event.title}</Title>
+        <Paragraph className="text-center text-lg text-gray-700">{event.description}</Paragraph>
 
-      {userRole === "HOST" ? (
-        // Host view
-        <>
-          <h2>Reservations</h2>
-          {reservations.length > 0 ? (
-            <ul>
-              {reservations.map((reservation) => (
-                <li key={reservation.id}>
-                  {reservation.firstName || "Anonymous"} {reservation.lastName || ""} - {reservation.status}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No reservations yet.</p>
-          )}
-        </>
-      ) : (
-        // User view
-        <>
-          {userHasReservation ? (
-            <></>
-          ) : (
-            <button
-              onClick={handleReservation}
-              style={{
-                padding: "10px 20px",
-                backgroundColor: "#4CAF50",
-                color: "white",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
-            >
-              Make a Reservation
-            </button>
-          )}
-        </>
-      )}
+        <div className="flex justify-between my-4">
+          <Text strong>Date: {new Date(event.date).toLocaleString()}</Text>
+          <Text strong>Location: {event.location}</Text>
+        </div>
+
+        <div className="my-4">
+          <Text strong>Seats Left: {event.maxParticipants}</Text>
+        </div>
+
+        {userRole === "HOST" ? (
+          // Host view
+          <>
+            <h2 className="text-xl mt-4">Reservations</h2>
+            {reservations.length > 0 ? (
+              <ul className="list-disc pl-5">
+                {reservations.map((reservation) => (
+                  <li key={reservation.id}>
+                    {reservation.firstName || "Anonymous"} {reservation.lastName || ""} -{" "}
+                    {reservation.status}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No reservations yet.</p>
+            )}
+          </>
+        ) : (
+          // User view
+          <>
+            {userHasReservation ? (
+              <Button
+                type="default"
+                disabled
+                className="w-full mt-4 bg-gray-500"
+              >
+                Reservation Confirmed
+              </Button>
+            ) : (
+              <Button
+                type="primary"
+                className="w-full mt-4"
+                onClick={handleReservation}
+                style={{ backgroundColor: "#4CAF50", borderColor: "#4CAF50" }}
+              >
+                Make a Reservation
+              </Button>
+            )}
+          </>
+        )}
+      </Card>
     </div>
   );
 };
