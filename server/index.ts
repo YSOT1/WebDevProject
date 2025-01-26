@@ -97,6 +97,16 @@ app.get('/user', verifyToken, (req, res) => {
     role: req.user.role,
   });
 });
+app.get('/events/all', (req, res) => {
+  const sqlSelect = `SELECT * FROM events`;
+
+  db.query(sqlSelect, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error fetching all events', error: err });
+    }
+    res.status(200).json(results);
+  });
+});
 app.get('/events', verifyToken, (req, res) => {
   const hostId = req.user.id;
 
@@ -209,6 +219,95 @@ app.delete('/events/:id', verifyToken, (req, res) => {
       res.status(200).json({ message: 'Event deleted successfully' });
   });
 });
+
+app.get('/reservations', verifyToken, (req, res) => {
+  const userId = req.user.id;
+  const sql = `
+    SELECT e.* FROM reservations r
+    JOIN events e ON r.eventId = e.id
+    WHERE r.userId = ?`;
+
+  db.query(sql, [userId], (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error fetching reservations', error: err });
+    }
+    res.status(200).json(results);
+  });
+});
+app.post('/reservations', verifyToken, (req, res) => {
+  const { eventId } = req.body;
+  const userId = req.user.id;
+
+  // Check if the user already has a reservation for this event
+  const sqlCheck = `SELECT * FROM reservations WHERE userId = ? AND eventId = ?`;
+  const sqlReserve = `INSERT INTO reservations (userId, eventId) VALUES (?, ?)`;
+  const sqlUpdateSeats = `UPDATE events SET maxParticipants = maxParticipants - 1 WHERE id = ? AND maxParticipants > 0`;
+
+  db.query(sqlCheck, [userId, eventId], (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error checking reservation', error: err });
+    }
+
+    if (results.length > 0) {
+      // User already has a reservation
+      return res.status(400).json({ message: 'You have already made a reservation for this event' });
+    }
+
+    // Proceed with reservation
+    db.query(sqlReserve, [userId, eventId], (err) => {
+      if (err) {
+        return res.status(500).json({ message: 'Error making reservation', error: err });
+      }
+
+      // Update seats only if reservation is successful
+      db.query(sqlUpdateSeats, [eventId], (err) => {
+        if (err) {
+          return res.status(500).json({ message: 'Error updating seats', error: err });
+        }
+
+        res.status(201).json({ message: 'Reservation successful' });
+      });
+    });
+  });
+});
+app.delete('/reservations', verifyToken, (req, res) => {
+  const { eventId } = req.body;
+  const userId = req.user.id;
+
+  // Check if the user has a reservation for this event
+  const sqlCheck = `SELECT * FROM reservations WHERE userId = ? AND eventId = ?`;
+  const sqlDelete = `DELETE FROM reservations WHERE userId = ? AND eventId = ?`;
+  const sqlUpdateSeats = `UPDATE events SET maxParticipants = maxParticipants + 1 WHERE id = ?`;
+
+  db.query(sqlCheck, [userId, eventId], (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error checking reservation', error: err });
+    }
+
+    if (results.length === 0) {
+      // No reservation found for the user
+      return res.status(404).json({ message: 'Reservation not found' });
+    }
+
+    // Proceed with deleting the reservation
+    db.query(sqlDelete, [userId, eventId], (err) => {
+      if (err) {
+        return res.status(500).json({ message: 'Error deleting reservation', error: err });
+      }
+
+      // Update seats only if reservation is successfully deleted
+      db.query(sqlUpdateSeats, [eventId], (err) => {
+        if (err) {
+          return res.status(500).json({ message: 'Error updating seats', error: err });
+        }
+
+        res.status(200).json({ message: 'Reservation deleted successfully' });
+      });
+    });
+  });
+});
+
+
 
 app.listen(3000, () => {
   console.log('Server is running on http://localhost:3000');
