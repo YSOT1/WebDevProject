@@ -1,35 +1,50 @@
+/**
+ * App Component - The root component of the Event Reservation System
+ * 
+ * This component serves as the main entry point for the application and handles:
+ * - Application routing using React Router
+ * - Global layout and styling
+ * - Route definitions for all major pages
+ * 
+ * The routing structure includes:
+ * - Public routes (Home, SignIn, SignUp)
+ * - Protected dashboard routes (User, Host, Admin)
+ * - Event-specific routes
+ */
+
 import React from 'react';
-import axios from 'axios';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Import routing components
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import SignUp from './pages/SignUp/signup'; // Import SignUp page
-import SignIn from './pages/SignIn/signin'; // Import SignIn page
+
+// Import page components
+import SignUp from './pages/SignUp/signup';
+import SignIn from './pages/SignIn/signin';
 import UserDashboard from './pages/dashboard/UserDashboard';
 import AdminDashboard from './pages/dashboard/AdminDashboard';
 import HostDashboard from './pages/dashboard/HostDashboard';
+import Home from './pages/Home/Home';
 import EventPage from './pages/EventPagecrud/eventpage';
 
 function App() {
-  const apiCall = () => {
-    axios.get('http://localhost:3000').then(() => {
-      console.log('API call success');
-    });
-  };
-
   return (
-    <div className="bg-gray-100 min-h-screen"> {/* Add background color to the body */}
-      <Router> {/* Wrap the routes inside the Router */}
-        <Routes> {/* Define your routes */}
-          <Route path="/" element={<button onClick={apiCall} className="fixed bottom-4 right-4 p-2 bg-blue-500 text-white rounded-full">
-            API Call
-          </button>} />
-          <Route path="/signup" element={<SignUp />} /> {/* Add route for SignUp page */}
-          <Route path="/signin" element={<SignIn />} /> {/* Add route for SignIn page */}
-          <Route path="/dashboard/UserDashboard" element={<UserDashboard />} /> {/* Add route for User Dashboard */}
-          <Route path="/dashboard/HostDashboard" element={<HostDashboard />} /> {/* Add route for Host Dashboard */}
-          <Route path="/dashboard/AdminDashboard" element={<AdminDashboard />} /> {/* Add route for Admin Dashboard */}
-          <Route path="/events/:eventId" element={<EventPage />} /> {/* Add route for event page */}
+    // Main application container with a light gray background
+    <div className="bg-gray-100 min-h-screen">
+      {/* Router wrapper for handling navigation */}
+      <Router>
+        {/* Route definitions */}
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
           
+          {/* Protected Dashboard Routes */}
+          <Route path="/dashboard/UserDashboard" element={<UserDashboard />} />
+          <Route path="/dashboard/HostDashboard" element={<HostDashboard />} />
+          <Route path="/dashboard/AdminDashboard" element={<AdminDashboard />} />
+          
+          {/* Event-specific Routes */}
+          <Route path="/events/:eventId" element={<EventPage />} />
         </Routes>
       </Router>
     </div>

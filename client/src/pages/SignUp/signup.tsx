@@ -1,26 +1,24 @@
-import React, { useState, FormEvent } from 'react'; // Correct import for React
-import { Input, Button } from 'antd';
-import { Select } from 'antd';
+import React, { useState, FormEvent } from 'react';
+import { Input, Button, Typography, Space, Card, Select } from 'antd';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
+import { useNavigate } from 'react-router-dom';
+
+const { Title } = Typography;
 const { Option } = Select;
 
 const SignUp: React.FC = () => {
-  // State for form fields
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [firstname, setFirstname] = useState<string>('');
   const [lastname, setLastname] = useState<string>('');
-  const [role, setRole] = useState<string>(''); // Store role directly here
+  const [role, setRole] = useState<string>('');
 
-  const navigate = useNavigate(); // Initialize navigate for programmatic navigation
+  const navigate = useNavigate();
 
-  // Handle role change
   const handleChange = (value: string) => {
-    setRole(value); // Update the role state when the select changes
+    setRole(value);
   };
 
-  // Validate email
   const validateForm = (): boolean => {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     const validEmailDomains = ['gmail.com', 'yahoo.com', 'outlook.com'];
@@ -46,11 +44,10 @@ const SignUp: React.FC = () => {
     return true;
   };
 
-  // Submit form handler
   const submitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validateForm()) {
-      return; // Stop submission if validation fails
+      return;
     }
 
     axios
@@ -59,13 +56,12 @@ const SignUp: React.FC = () => {
         password,
         firstname,
         lastname,
-        role, // Send the role to the backend
+        role,
       })
       .then((data) => {
         console.log(data);
-        alert('Signup successful! Redirecting to Sign In...'); // Inform user of success
-        navigate('/signin'); // Redirect to the Sign In page
-        // Clear form after submit
+        alert('Signup successful! Redirecting to Sign In...');
+        navigate('/signin');
         setEmail('');
         setPassword('');
         setFirstname('');
@@ -79,74 +75,71 @@ const SignUp: React.FC = () => {
   };
 
   return (
-    <form
-      onSubmit={submitHandler}
-      className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md mt-8"
-    >
-      <h1 className="text-2xl font-bold mb-6 text-center">Sign Up</h1>
-
-      <label htmlFor="email" className="block text-lg mb-2">
-        Email
-      </label>
-      <Input
-        id="email"
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="w-full p-2 border border-gray-300 rounded mb-4"
-      />
-
-      <label htmlFor="password" className="block text-lg mb-2">
-        Password
-      </label>
-      <Input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="w-full p-2 border border-gray-300 rounded mb-4"
-      />
-
-      <label htmlFor="firstname" className="block text-lg mb-2">
-        First Name
-      </label>
-      <Input
-        type="text"
-        placeholder="First Name"
-        value={firstname}
-        onChange={(e) => setFirstname(e.target.value)}
-        className="w-full p-2 border border-gray-300 rounded mb-4"
-      />
-
-      <label htmlFor="lastname" className="block text-lg mb-2">
-        Last Name
-      </label>
-      <Input
-        type="text"
-        placeholder="Last Name"
-        value={lastname}
-        onChange={(e) => setLastname(e.target.value)}
-        className="w-full p-2 border border-gray-300 rounded mb-4"
-      />
-
-      <label htmlFor="role" className="block text-lg mb-2">
-        Role
-      </label>
-      <Select
-        value={role} // Bind Select to the role state
-        onChange={handleChange} // Use handleChange to update role state
-        placeholder="Select your role"
-        style={{ width: '100%' }}
-      >
-        <Option value="HOST">Host</Option>
-        <Option value="USER">User</Option>
-      </Select>
-
-      <Button type="primary" htmlType="submit" className="w-full mt-4">
-        Sign Up
-      </Button>
-    </form>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-md">
+        <div className="text-center mb-6">
+          <Title level={2}>Sign Up</Title>
+        </div>
+        <form onSubmit={submitHandler} className="space-y-4">
+          <div>
+            <Input
+              size="large"
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div>
+            <Input.Password
+              size="large"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <div>
+            <Input
+              size="large"
+              placeholder="First Name"
+              value={firstname}
+              onChange={(e) => setFirstname(e.target.value)}
+            />
+          </div>
+          <div>
+            <Input
+              size="large"
+              placeholder="Last Name"
+              value={lastname}
+              onChange={(e) => setLastname(e.target.value)}
+            />
+          </div>
+          <div>
+            <Select
+              size="large"
+              value={role}
+              onChange={handleChange}
+              placeholder="Select your role"
+              style={{ width: '100%' }}
+            >
+              <Option value="HOST">Host</Option>
+              <Option value="USER">User</Option>
+            </Select>
+          </div>
+          <Space className="w-full justify-between">
+            <Button type="primary" htmlType="submit" size="large">
+              Sign Up
+            </Button>
+            <Button 
+              size="large"
+              onClick={() => navigate('/signin')}
+            >
+              Already have an account? Sign In
+            </Button>
+          </Space>
+        </form>
+      </Card>
+    </div>
   );
 };
 
