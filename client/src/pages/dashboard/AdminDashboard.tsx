@@ -327,7 +327,7 @@ const AdminDashboard: React.FC = () => {
           onClick={() => {
             localStorage.removeItem("token");
             message.success("Signed out successfully");
-            navigate("/signin");
+            navigate("/");
           }}
         >
           Sign Out
@@ -351,7 +351,7 @@ const AdminDashboard: React.FC = () => {
           </Button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {users.map((user) => (
+        {users.map((user) => (
             <Card
               key={user.id}
               className="hover:shadow-lg transition-shadow duration-300"
@@ -369,9 +369,9 @@ const AdminDashboard: React.FC = () => {
                 <Button
                   danger
                   icon={<DeleteOutlined />}
-                  onClick={() => deleteUser(user.id)}
-                >
-                  Delete
+              onClick={() => deleteUser(user.id)}
+            >
+              Delete
                 </Button>
               ]}
               extra={
@@ -398,7 +398,7 @@ const AdminDashboard: React.FC = () => {
       <div>
         <Title level={3} className="mb-4">Events</Title>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {events.map((event) => (
+        {events.map((event) => (
             <Card
               key={event.id}
               className="hover:shadow-lg transition-shadow duration-300"
@@ -425,9 +425,9 @@ const AdminDashboard: React.FC = () => {
                 <Button
                   danger
                   icon={<DeleteOutlined />}
-                  onClick={() => deleteEvent(event.id)}
-                >
-                  Delete
+              onClick={() => deleteEvent(event.id)}
+            >
+              Delete
                 </Button>
               ]}
             >

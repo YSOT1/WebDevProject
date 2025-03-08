@@ -61,7 +61,8 @@ const HostDashboard: React.FC = () => {
 
   const handleSignout = () => {
     localStorage.removeItem("token");
-    navigate("/signin");
+    message.success("Signed out successfully");
+    navigate("/");
   };
 
   const handleCreateEvent = (values: any) => {

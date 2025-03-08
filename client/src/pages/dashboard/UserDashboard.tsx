@@ -69,7 +69,8 @@ const UserDashboard: React.FC = () => {
 
   const handleSignOut = () => {
     localStorage.removeItem("token");
-    navigate("/signin");
+    message.success("Signed out successfully");
+    navigate("/");
   };
 
   const handleCancelReservation = (eventId: number) => {
