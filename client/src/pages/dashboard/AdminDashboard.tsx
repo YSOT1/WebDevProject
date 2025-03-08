@@ -125,10 +125,32 @@ const AdminDashboard: React.FC = () => {
    * @param userId - The ID of the user to delete
    */
   const deleteUser = (userId: number) => {
-    axios
-      .delete(`http://localhost:3000/admin/users/${userId}`)
-      .then(() => setUsers(users.filter((user) => user.id !== userId)))
-      .catch((err) => console.error("Error deleting user:", err));
+    const token = localStorage.getItem("token");
+    if (!token) {
+      message.error("Authentication required");
+      navigate("/signin");
+      return;
+    }
+
+    Modal.confirm({
+      title: 'Are you sure you want to delete this user?',
+      content: 'This action cannot be undone.',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk: async () => {
+        try {
+          await axios.delete(`http://localhost:3000/admin/users/${userId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          setUsers(users.filter((user) => user.id !== userId));
+          message.success('User deleted successfully');
+        } catch (err) {
+          console.error("Error deleting user:", err);
+          message.error('Failed to delete user');
+        }
+      }
+    });
   };
 
   /**
@@ -136,10 +158,32 @@ const AdminDashboard: React.FC = () => {
    * @param eventId - The ID of the event to delete
    */
   const deleteEvent = (eventId: number) => {
-    axios
-      .delete(`http://localhost:3000/admin/events/${eventId}`)
-      .then(() => setEvents(events.filter((event) => event.id !== eventId)))
-      .catch((err) => console.error("Error deleting event:", err));
+    const token = localStorage.getItem("token");
+    if (!token) {
+      message.error("Authentication required");
+      navigate("/signin");
+      return;
+    }
+
+    Modal.confirm({
+      title: 'Are you sure you want to delete this event?',
+      content: 'This action cannot be undone.',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk: async () => {
+        try {
+          await axios.delete(`http://localhost:3000/admin/events/${eventId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          setEvents(events.filter((event) => event.id !== eventId));
+          message.success('Event deleted successfully');
+        } catch (err) {
+          console.error("Error deleting event:", err);
+          message.error('Failed to delete event');
+        }
+      }
+    });
   };
 
   const handleUserSubmit = async (values: UserFormValues) => {
