@@ -1,0 +1,107 @@
+.ant-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.ant-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 24px !important;
+}
+
+.ant-card-meta {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.ant-card-meta-detail {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.ant-card-meta-title {
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+  margin-bottom: 16px !important;
+  white-space: normal !important;
+}
+
+.ant-card-meta-description {
+  flex: 1;
+  color: rgba(0, 0, 0, 0.65) !important;
+}
+
+.ant-space {
+  width: 100%;
+}
+
+.ant-card-hoverable:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* User card specific styles */
+.user-card {
+  min-height: 200px;
+}
+
+.user-card .ant-card-head {
+  min-height: 0;
+  padding: 16px 24px !important;
+  border-bottom: none;
+}
+
+.user-card .ant-card-extra {
+  padding: 0;
+}
+
+.user-card .ant-card-body {
+  padding: 0 24px 24px 24px !important;
+}
+
+.user-card .ant-card-meta-title {
+  padding-right: 64px;
+}
+
+/* Event card specific styles */
+.event-card {
+  min-height: 250px;
+}
+
+.event-card .ant-card-head {
+  min-height: 0;
+  padding: 16px 24px !important;
+  border-bottom: none;
+}
+
+.event-card .ant-card-body {
+  padding: 0 24px 24px 24px !important;
+}
+
+/* Button group styles */
+.button-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  justify-content: flex-start;
+}
+
+/* Tag styles */
+.role-tag {
+  position: absolute;
+  top: 16px;
+  right: 24px;
+}
+
+/* Grid container styles */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  padding: 24px 0;
+} 

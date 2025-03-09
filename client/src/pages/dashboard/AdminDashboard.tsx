@@ -4,6 +4,7 @@ import axios from "axios";
 import { Card, Button, Tag, Typography, Space, Modal, Form, Input, Select, Table, message, DatePicker } from "antd";
 import { DeleteOutlined, EditOutlined, UserAddOutlined, LogoutOutlined } from "@ant-design/icons";
 import dayjs from 'dayjs';
+import './AdminDashboard.css';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -335,8 +336,8 @@ const AdminDashboard: React.FC = () => {
       </div>
       
       {/* Users Section */}
-      <div className="mb-8">
-        <div className="flex justify-between items-center mb-4">
+      <div className="mb-12">
+        <div className="flex justify-between items-center mb-6">
           <Title level={3}>Users</Title>
           <Button
             type="primary"
@@ -350,42 +351,52 @@ const AdminDashboard: React.FC = () => {
             Create User
           </Button>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {users.map((user) => (
+        <div className="grid-container">
+          {users.map((user) => (
             <Card
               key={user.id}
-              className="hover:shadow-lg transition-shadow duration-300"
-              actions={[
-                <Button
-                  icon={<EditOutlined />}
-                  onClick={() => {
-                    setEditingUser(user);
-                    userForm.setFieldsValue(user);
-                    setIsUserModalVisible(true);
-                  }}
-                >
-                  Edit
-                </Button>,
-                <Button
-                  danger
-                  icon={<DeleteOutlined />}
-              onClick={() => deleteUser(user.id)}
-            >
-              Delete
-                </Button>
-              ]}
+              hoverable
+              className="user-card"
               extra={
-                <Tag color={getRoleTagColor(user.role)}>
+                <Tag className="role-tag" color={getRoleTagColor(user.role)}>
                   {user.role}
                 </Tag>
               }
             >
               <Card.Meta
-                title={`${user.firstName} ${user.lastName}`}
+                title={
+                  <div className="text-lg font-medium">
+                    {user.firstName} {user.lastName}
+                  </div>
+                }
                 description={
-                  <Space direction="vertical">
-                    <Text type="secondary">{user.email}</Text>
-                    <Text type="secondary">Created: {new Date(user.createdAt).toLocaleDateString()}</Text>
+                  <Space direction="vertical" size="middle" className="w-full">
+                    <div>
+                      <Text className="text-gray-600 block mb-2">{user.email}</Text>
+                      <Text type="secondary" className="block">
+                        Created: {new Date(user.createdAt).toLocaleDateString()}
+                      </Text>
+                    </div>
+                    <div className="button-group">
+                      <Button
+                        type="primary"
+                        icon={<EditOutlined />}
+                        onClick={() => {
+                          setEditingUser(user);
+                          userForm.setFieldsValue(user);
+                          setIsUserModalVisible(true);
+                        }}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={() => deleteUser(user.id)}
+                      >
+                        Delete
+                      </Button>
+                    </div>
                   </Space>
                 }
               />
@@ -396,71 +407,73 @@ const AdminDashboard: React.FC = () => {
 
       {/* Events Section */}
       <div>
-        <Title level={3} className="mb-4">Events</Title>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {events.map((event) => (
+        <Title level={3} className="mb-6">Events</Title>
+        <div className="grid-container">
+          {events.map((event) => (
             <Card
               key={event.id}
-              className="hover:shadow-lg transition-shadow duration-300"
-              actions={[
-                <Button
-                  icon={<EditOutlined />}
-                  onClick={() => {
-                    setEditingEvent(event);
-                    eventForm.setFieldsValue({
-                      ...event,
-                      date: dayjs(event.date)
-                    });
-                    setIsEventEditModalVisible(true);
-                  }}
-                >
-                  Edit
-                </Button>,
-                <Button
-                  icon={<EditOutlined />}
-                  onClick={() => handleEventClick(event)}
-                >
-                  View Details
-                </Button>,
-                <Button
-                  danger
-                  icon={<DeleteOutlined />}
-              onClick={() => deleteEvent(event.id)}
+              hoverable
+              className="event-card"
+              title={
+                <div className="flex justify-between items-start">
+                  <span className="text-lg font-medium">{event.title}</span>
+                </div>
+              }
             >
-              Delete
-                </Button>
-              ]}
-            >
-              <Card.Meta
-                title={event.title}
-                description={
-                  <Space direction="vertical">
-                    <Text type="secondary">
-                      {new Date(event.date).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </Text>
-                    <Text>{event.description}</Text>
-                    <Space>
-                      <Text strong>Location:</Text>
-                      <Text>{event.location}</Text>
-                    </Space>
-                    <Space>
-                      <Text strong>Available Seats:</Text>
-                      <Text>{event.maxParticipants}</Text>
-                    </Space>
-                    <Space>
-                      <Text strong>Host:</Text>
-                      <Text>{event.hostFirstName} {event.hostLastName}</Text>
-                    </Space>
-                    <Text type="secondary">Created: {new Date(event.createdAt).toLocaleDateString()}</Text>
-                  </Space>
-                }
-              />
+              <Space direction="vertical" size="middle" className="w-full">
+                <Text className="text-gray-600">
+                  {new Date(event.date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </Text>
+                <Text>{event.description}</Text>
+                <Space className="w-full">
+                  <Text strong>Location:</Text>
+                  <Text>{event.location}</Text>
+                </Space>
+                <Space className="w-full">
+                  <Text strong>Available Seats:</Text>
+                  <Text>{event.maxParticipants}</Text>
+                </Space>
+                <Space className="w-full">
+                  <Text strong>Host:</Text>
+                  <Text>{event.hostFirstName} {event.hostLastName}</Text>
+                </Space>
+                <Text type="secondary">Created: {new Date(event.createdAt).toLocaleDateString()}</Text>
+                <div className="button-group">
+                  <Button
+                    type="primary"
+                    icon={<EditOutlined />}
+                    onClick={() => {
+                      setEditingEvent(event);
+                      eventForm.setFieldsValue({
+                        ...event,
+                        date: dayjs(event.date)
+                      });
+                      setIsEventEditModalVisible(true);
+                    }}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    type="default"
+                    onClick={() => handleEventClick(event)}
+                  >
+                    View Details
+                  </Button>
+                  <Button
+                    danger
+                    icon={<DeleteOutlined />}
+                    onClick={() => deleteEvent(event.id)}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </Space>
             </Card>
           ))}
         </div>

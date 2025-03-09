@@ -2,11 +2,3 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background-color: #f7fafc;
-    /* equivalent to bg-gray-100 */
-}
